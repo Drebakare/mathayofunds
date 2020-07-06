@@ -7,6 +7,7 @@
         <meta name="description" content="CryptoCoin is a powerful Bitcoin Crypto Currency Wallet and Mining Template with full of customization options and features">
         <!-- Fav Icon  -->
         <title>Mathayo Funds - Home</title>
+        <link rel='icon' href='{{asset('favicon.png')}}' type='image/x-icon'/>
         <!-- Vendor Bundle CSS -->
         <link rel="stylesheet" href="{{asset('assets/css/bootstrap-extend.css')}}">
         {{--Font-AWESOME--}}

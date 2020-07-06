@@ -185,7 +185,6 @@
                                                                 <a  href="{{route('user.reset-password', ['token' => $user->token])}}"  style="text-decoration:none; color: blue">
                                                                        Click To Reset Password
                                                                 </a>
-
                                                             </p>
                                                         </div>
                                                     </div>
