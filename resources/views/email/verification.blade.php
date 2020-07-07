@@ -241,14 +241,6 @@
                                                                 <br/>
                                                                 <br/>Welcome to Mathayo Funds
                                                                 <br/>
-                                                                We Buy All kinds of giftcards and Bitcoin ranging from:
-                                                                Amazon Gift card, iTunes
-                                                                Giftcard, Steam wallet, Sephora Giftcard, Vanilla,
-                                                                Nordstrom, Googleplay Giftcard etc...
-                                                                Sell to us now and benefit from our amazing rates, and
-                                                                you can also earn more through our
-                                                                affiliate marketing program, as you refer to us, you
-                                                                earn some discounts..<br/>
                                                                 Kindly click on the link below to verify your email
                                                                 address
                                                             </p>

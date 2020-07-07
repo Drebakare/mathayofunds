@@ -66,9 +66,10 @@ class AuthenticationController extends Controller
         try {
             // save user details
             User::registerUser($request);
-            Mail::to($request->email)->send(new \App\Mail\RegistrationMail($request->username)); // send email to user
-            Mail::to('mathayofund@gmail.com')->send(new \App\Mail\RegistrationMail()); // send email to user
+
             if (Auth::attempt(['email' => $request->email, 'password' => $request->password])){
+                Mail::to($request->email)->send(new \App\Mail\RegistrationMail(Auth::user())); // send email to user
+/*                Mail::to('mathayofund@gmail.com')->send(new \App\Mail\RegistrationMail()); // send email to user*/
                 $role = Auth::user()->role_id;
                 // check role for redirection
                 switch ($role){

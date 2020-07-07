@@ -4,6 +4,7 @@ namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Support\Facades\Auth;
+use phpDocumentor\Reflection\DocBlock\Tags\Reference\Fqsen;
 
 class checkAuth
 {
@@ -16,8 +17,14 @@ class checkAuth
      */
     public function handle($request, Closure $next)
     {
+
         if (Auth::check()){
-            return $next($request);
+            if (Auth::user()->is_verified == 1){
+                return $next($request);
+            }
+            else{
+                return redirect(route('ensure-account-verification'))->with('failure', 'Account Verification is required');
+            }
         }
         else{
             if(\Illuminate\Support\Facades\Route::getCurrentRoute()->action['as'] == "user.trade-coin"

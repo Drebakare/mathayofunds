@@ -13,9 +13,13 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+    /*Route::get('/view-page', function (){
+        return view('email.registration');
+    })->name('welcome');*/
+
     Route::get('/view-page', function (){
-        return view('email.forgot-password');
-    })->name('welcome');
+        return view('email.registration');
+    })/*->name('welcome')*/;
 
    /* Route::get('/view-page', function (){
         return view('email.registration');
@@ -31,6 +35,21 @@ use Illuminate\Support\Facades\Route;
         'uses' => 'Homepage\HomepageController@Faqs'
     ]);
 
+    Route::get('/ensure-account-verification', [
+        'as' => 'ensure-account-verification',
+        'uses' => 'Homepage\HomepageController@ensureAccountVerification'
+    ]);
+
+    Route::get('/user/resend-verification-link/{token}', [
+        'as' => 'user.resend-verification-link',
+        'uses' => 'Homepage\HomepageController@resendVerificationLink'
+    ]);
+
+    /*Route::get('/faqs', [
+        'as' => 'failed-verification',
+        'uses' => 'Homepage\HomepageController@Faqs'
+    ]);*/
+
     Route::get('/view-card-rates', [
         'as' => 'view-card-rates',
         'uses' => 'Homepage\HomepageController@viewCardRate'
@@ -44,6 +63,11 @@ use Illuminate\Support\Facades\Route;
     Route::get('/about-us', [
         'as' => 'about-us',
         'uses' => 'Homepage\HomepageController@aboutUs'
+    ]);
+
+    Route::get('/verify-account/{token}', [
+        'as' => 'verify-account',
+        'uses' => 'Homepage\HomepageController@verifyAccount'
     ]);
 
     Route::get('/logout', [

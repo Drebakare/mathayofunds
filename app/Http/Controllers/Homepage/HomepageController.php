@@ -8,7 +8,11 @@ use App\Coin;
 use App\CoinRate;
 use App\Http\Controllers\Controller;
 use App\Review;
+use App\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
 
 class HomepageController extends Controller
 {
@@ -39,5 +43,40 @@ class HomepageController extends Controller
     public function viewCoinRate(){
         $coins = CoinRate::get();
         return view('actions.coin-rate', compact('coins'));
+    }
+
+    public function verifyAccount($token){
+        $user = User::where('token', $token)->first();
+        if ($user){
+            $user->is_verified = 1;
+            $user->token = Str::random(15);
+            $user->save();
+            return redirect(route('homepage'))->with('success', 'Account Successfully Verified');
+        }
+        else{
+            Auth::logout();
+            return redirect(route('login'))->with('failure', 'Token has expired');
+        }
+    }
+
+    public function ensureAccountVerification(){
+        return view('actions.verify');
+    }
+
+    public function resendVerificationLink($token){
+        try {
+            $user = User::where('token', $token)->first();
+            if ($user){
+                Mail::to($user->email)->send(new \App\Mail\VerificationMail($user)); // send email to user
+                return redirect()->back()->with('success', 'Verification Link Successfully Sent to Your Email');
+            }
+            else{
+                return redirect()->back()->with('failure', 'User Details Do not Exist');
+            }
+        }
+        catch (\Exception $exception){
+            return redirect()->back()->with('failure', 'Action Could not be Performed');
+
+        }
     }
 }
