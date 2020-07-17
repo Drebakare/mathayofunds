@@ -24,7 +24,7 @@ class CardSelling extends Model
     public function user(){
         return  $this->belongsTo(User::class);
     }
-    public function ecodeTransaction(){
+    public function ecodeTransactions(){
         return  $this->hasOne(EcodeTransactions::class);
     }
     public function imageuploads(){

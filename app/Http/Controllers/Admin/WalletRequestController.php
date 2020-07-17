@@ -18,10 +18,22 @@ class WalletRequestController extends Controller
         return view('Admin.Actions.user-wallets', compact('withdrawals'));
     }
 
-    public function approveWalletPaymentRequest(Withdrawal $withdrawal)
+    public function approveWalletPaymentRequest($withdrawal)
     {
-        $withdrawal->update(['status' => 1]);
-        return redirect()->back();
+        try {
+            $withdrawal = Withdrawal::where('id', $withdrawal)->first();
+            if ($withdrawal){
+                $withdrawal->status = 1;
+                $withdrawal->save();
+                return redirect()->back()->with('success', "Confirmation Was Successful");
+            }
+            else{
+                return redirect()->back()->with('failure', "Withdrawal Confirmation Could not be Done");
+            }
+        }
+        catch (\Exception $exception){
+            return redirect()->back()->with('failure', "Action Could not Be Performed");
+        }
     }
 
     public function cancellationMessage(Request $request, Withdrawal $withdrawal, User $user)

@@ -118,6 +118,7 @@
                                         <th>Email</th>
                                         <th>Username</th>
                                         <th>Role</th>
+                                        <th>Status</th>
                                         <th>Bank</th>
                                         <th>Account No</th>
                                         <th>Account Name</th>
@@ -130,6 +131,7 @@
                                             <td>{{$limit_user->email}}</td>
                                             <td>{{$limit_user->username}}</td>
                                             <td>{{$limit_user->role_id == 1 ? "Customer" : "Admin"}}</td>
+                                            <td>{{$limit_user->is_verified == 1 ? "Verified" : "Unverified"}}</td>
                                             <td>{{$limit_user->accountDetail == null ? "Nill" : $limit_user->accountDetail->bank}}</td>
                                             <td>{{$limit_user->accountDetail == null ? "Nill" : $limit_user->accountDetail->account_number}}</td>
                                             <td>{{$limit_user->accountDetail == null ? "Nill" : $limit_user->accountDetail->name}}</td>
@@ -140,6 +142,25 @@
                                                     <i class="mdi mdi-eye mdi-24px"></i>
                                                 </span>
                                                 </a>
+                                                @if($limit_user->is_verified == 1)
+                                                    <a href="{{route('admin.unverify-user', ['token' => $limit_user->token])}}">
+                                                    <span data-toggle="tooltip" data-placement="top" title data-original-title="Unverify User ">
+                                                        <i class="mdi mdi-cancel mdi-24px"></i>
+                                                    </span>
+                                                    </a>
+                                                @endif
+                                                @if($limit_user->is_verified == 0)
+                                                    <a href="{{route('admin.verify-user', ['token' => $limit_user->token])}}">
+                                                        <span data-toggle="tooltip" data-placement="top" title data-original-title="Verify User">
+                                                        <i class="mdi mdi-check mdi-24px"></i>
+                                                    </span>
+                                                    </a>
+                                                @endif
+                                                {{--<a href="{{route('admin.user-details', ['token' => $limit_user->token])}}">
+                                                <span data-toggle="tooltip" data-placement="top" title data-original-title="View User Details">
+                                                    <i class="mdi mdi-account-check-outline;2 mdi-24px"></i>
+                                                </span>
+                                                </a>--}}
                                                 @if($limit_user->role_id == 1)
                                                     <a href="#" data-toggle="modal" data-target=".makeAdmin-{{$key}}">
                                                     <span data-toggle="tooltip" data-placement="top" title data-original-title="Make Admin">
@@ -468,7 +489,7 @@
                         <div class="card">
                             <div class="card-body">
                                 <div class="">
-                                    <p>{{$card_transaction->sell_option_id == 1 ? $card_transaction->ecodeTransaction->code : "Nill"}}</p>
+                                    <p>{{$card_transaction->sell_option_id == 1 ? $card_transaction->ecodeTransactions->code : "Nill"}}</p>
                                 </div>
                             </div>
                         </div>

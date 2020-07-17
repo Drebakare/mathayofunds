@@ -64,7 +64,7 @@ class HomepageController extends Controller
     }
 
     public function resendVerificationLink($token){
-        try {
+        /*try {*/
             $user = User::where('token', $token)->first();
             if ($user){
                 Mail::to($user->email)->send(new \App\Mail\VerificationMail($user)); // send email to user
@@ -73,10 +73,10 @@ class HomepageController extends Controller
             else{
                 return redirect()->back()->with('failure', 'User Details Do not Exist');
             }
-        }
-        catch (\Exception $exception){
+        /*}*/
+        /*catch (\Exception $exception){
             return redirect()->back()->with('failure', 'Action Could not be Performed');
 
-        }
+        }*/
     }
 }

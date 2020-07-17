@@ -364,6 +364,31 @@ class AdminController extends Controller
         }
     }
 
+    public function unverifyUser($token){
+        $user = User::where('token' , $token)->first();
+        if ($user){
+            $user->is_verified = 0;
+            $user->token = Str::random(15);
+            $user->save();
+            return redirect()->back()->with('success', 'User Successfully Unverified');
+        }
+        else{
+            return redirect()->back()->with('failure', 'User Details Not Found');
+        }
+    }
+
+    public function verifyUser($token){
+        $user = User::where('token' , $token)->first();
+        if ($user){
+            $user->is_verified = 1;
+            $user->token = Str::random(15);
+            $user->save();
+            return redirect()->back()->with('success', 'User Successfully Verified');
+        }
+        else{
+            return redirect()->back()->with('failure', 'User Details Not Found');
+        }
+    }
 
 
 }

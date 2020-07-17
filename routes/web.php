@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\Route;
     })->name('welcome');*/
 
     Route::get('/view-page', function (){
-        return view('email.registration');
+        return view('email.verification');
     })/*->name('welcome')*/;
 
    /* Route::get('/view-page', function (){
@@ -247,6 +247,16 @@ use Illuminate\Support\Facades\Route;
     Route::get('/admin/user-details/{token}', [
         'as' => 'admin.user-details',
         'uses' => 'Admin\AdminController@userDetails'
+    ])->middleware('checkAdmin');
+
+    Route::get('/admin/unverify-user/{token}', [
+        'as' => 'admin.unverify-user',
+        'uses' => 'Admin\AdminController@unverifyUser'
+    ])->middleware('checkAdmin');
+
+    Route::get('/admin/verify-user/{token}', [
+        'as' => 'admin.verify-user',
+        'uses' => 'Admin\AdminController@verifyUser'
     ])->middleware('checkAdmin');
 
     Route::get('/admin/make-admin/{token}', [

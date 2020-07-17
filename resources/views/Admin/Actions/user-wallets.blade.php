@@ -65,7 +65,7 @@
                                                         </a>
                                                     </span>&nbsp;&nbsp;
 
-                                                        <span data-toggle="modal" data-target=".approvePaymentRequest-{{$withdrawal->user->token}}">
+                                                        <span data-toggle="modal" data-target=".approvePaymentRequest-{{$withdrawal->id}}">
                                                         <a href="#" data-toggle="tooltip" data-placement="top" title data-original-title="Approve Payment Request">
                                                                 <h4 class="text-primary"><i class="mdi mdi-check-circle mdi-24px"></i></h4>
                                                         </a>
@@ -181,7 +181,7 @@
         </div>
     @endforeach
     @foreach($withdrawals as $withdrawal)
-        <div class="modal fade approvePaymentRequest-{{$withdrawal->user->token}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal fade approvePaymentRequest-{{$withdrawal->id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered" role="document">
                 <div class="modal-content">
                     <div class="modal-header">

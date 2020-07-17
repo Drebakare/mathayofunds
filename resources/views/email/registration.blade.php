@@ -261,7 +261,7 @@
                                                                         <div
                                                                             class="contentEditableContainer contentTextEditable">
                                                                             <div class="contentEditable" align='center'>
-                                                                                <a target='_blank'
+                                                                                <a
                                                                                    href="{{Route('verify-account', ['token' => $user->token])}}"
                                                                                    class='link2'>Verify Account</a>
                                                                             </div>

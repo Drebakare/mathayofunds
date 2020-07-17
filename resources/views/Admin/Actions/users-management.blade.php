@@ -25,6 +25,7 @@
                                         <th>Email</th>
                                         <th>Username</th>
                                         <th>Role</th>
+                                        <th>Status</th>
                                         <th>Bank</th>
                                         <th>Account No</th>
                                         <th>Account Name</th>
@@ -38,6 +39,7 @@
                                             <td>{{$user->email}}</td>
                                             <td>{{$user->username}}</td>
                                             <td>{{$user->role_id == 1 ? "Customer" : "Admin"}}</td>
+                                            <td>{{$user->is_verified == 1 ? "Verified" : "Unverified"}}</td>
                                             <td>{{$user->accountDetail == null ? "Nill" : $user->accountDetail->bank}}</td>
                                             <td>{{$user->accountDetail == null ? "Nill" : $user->accountDetail->account_number}}</td>
                                             <td>{{$user->accountDetail == null ? "Nill" : $user->accountDetail->name}}</td>
@@ -50,6 +52,20 @@
                                                         <h4 class="text-primary"><i class="mdi mdi-eye mdi-24px"></i></h4>
                                                     </span>
                                                     </a>
+                                                    @if($user->is_verified == 1)
+                                                        <a href="{{route('admin.unverify-user', ['token' => $user->token])}}">
+                                                    <span data-toggle="tooltip" data-placement="top" title data-original-title="Unverify User ">
+                                                        <i class="mdi mdi-cancel mdi-24px"></i>
+                                                    </span>
+                                                        </a>
+                                                    @endif
+                                                    @if($user->is_verified == 0)
+                                                        <a href="{{route('admin.verify-user', ['token' => $user->token])}}">
+                                                        <span data-toggle="tooltip" data-placement="top" title data-original-title="Verify User">
+                                                        <i class="mdi mdi-check mdi-24px"></i>
+                                                    </span>
+                                                        </a>
+                                                    @endif
                                                     &nbsp;@if($user->role_id == 1)
                                                         <span data-toggle="modal" data-target=".makeAdmin-{{$key}}">
                                                             <a href="#" data-toggle="tooltip" data-placement="top" title data-original-title="Make Admin">
