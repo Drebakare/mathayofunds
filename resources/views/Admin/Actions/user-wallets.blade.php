@@ -104,15 +104,13 @@
                     </div>
                 </div>
             </div>
-
-
         </div>
     </div>
 
 
 
-    @foreach($withdrawals as $withdrawal)
-        <div class="modal fade viewUserDetails-{{$withdrawal->user->token}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    @foreach($withdrawals as $new_withdrawal)
+        <div class="modal fade viewUserDetails-{{$new_withdrawal->user->token}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -124,19 +122,19 @@
                     <div class="modal-body">
                         <div class="mt-3">
                             <label>Bank Name</label>
-                            <input type="text" class="form-control" name="name" value="{{$withdrawal->user->accountDetail->bank}}" disabled/>
+                            <input type="text" class="form-control" name="name" value="{{$new_withdrawal->user->accountDetail->bank}}" disabled/>
                         </div>
                         <div class="mt-3">
                             <label>Bank Account Number</label>
-                            <input type="number" class="form-control" name="country" value="{{$withdrawal->user->accountDetail->account_number}}" disabled />
+                            <input type="number" class="form-control" name="country" value="{{$new_withdrawal->user->accountDetail->account_number}}" disabled />
                         </div>
                         <div class="mt-3">
                             <label>Full Name (As per bank)</label>
-                            <input type="text" class="form-control" name="rate" value="{{$withdrawal->user->accountDetail->name}}" disabled />
+                            <input type="text" class="form-control" name="rate" value="{{$new_withdrawal->user->accountDetail->name}}" disabled />
                         </div>
                         <div class="mt-3">
                             <label>Amount Requested To Be Paid</label>
-                            <input type="text" class="form-control" name="rate" value="&#8358;{{$withdrawal->amount}}" disabled />
+                            <input type="text" class="form-control" name="rate" value="&#8358;{{$new_withdrawal->amount}}" disabled />
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -146,11 +144,11 @@
             </div>
         </div>
     @endforeach
-    @foreach($withdrawals as $withdrawal)
-        <div class="modal fade cancelPaymentRequest-{{$withdrawal->user->token}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    @foreach($withdrawals as $msg_withdrawal)
+        <div class="modal fade cancelPaymentRequest-{{$msg_withdrawal->user->token}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered" role="document">
                 <div class="modal-content">
-                    <form action="{{route('admin.cancellation-message', [$withdrawal->id, $withdrawal->user_id])}}" method="post">
+                    <form action="{{route('admin.cancellation-message', [$msg_withdrawal->id, $msg_withdrawal->user_id])}}" method="post">
                         @csrf
                         <div class="modal-header">
                             <h4 class="modal-title" id="exampleModalLabel">You Are About to Cancel This Payment Request</h4>
@@ -180,8 +178,8 @@
             </div>
         </div>
     @endforeach
-    @foreach($withdrawals as $withdrawal)
-        <div class="modal fade approvePaymentRequest-{{$withdrawal->id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    @foreach($withdrawals as $confirm_withdrawal)
+        <div class="modal fade approvePaymentRequest-{{$confirm_withdrawal->id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered" role="document">
                 <div class="modal-content">
                     <div class="modal-header">
@@ -200,7 +198,7 @@
                         </div>
                     </div>
                     <div class="modal-footer">
-                        <a href="{{route('admin.approve-wallet-payment-request', $withdrawal->id)}}" class="btn btn-primary">Yes</a>
+                        <a href="{{route('admin.approve-wallet-payment-request', $confirm_withdrawal->id)}}" class="btn btn-primary">Yes</a>
                         <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
                     </div>
                 </div>

@@ -33,6 +33,7 @@
                             <li><a href="{{route('about-us')}}">About</a></li>
                             <li><a href="{{route('faqs')}}">F.A.Q</a></li>
                             <li><a href="{{route('faqs')}}">Service</a></li>
+                            <li><a href="{{route('privacy-policy')}}">Privacy Policy</a></li>
                         </ul>
                     </div>
                 </div>

@@ -25,6 +25,10 @@ use Illuminate\Support\Facades\Route;
         return view('email.registration');
     })->name('welcome');*/
 
+    Route::get('/privacy-policy', function (){
+        return view('actions.privacy');
+    })->name('privacy-policy');
+
     Route::get('/', [
         'as' => 'homepage',
         'uses' => 'Homepage\HomepageController@Homepage'
