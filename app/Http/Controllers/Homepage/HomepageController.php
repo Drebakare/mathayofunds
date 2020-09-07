@@ -7,8 +7,10 @@ use App\CardRate;
 use App\Coin;
 use App\CoinRate;
 use App\Http\Controllers\Controller;
+use App\Platform;
 use App\Review;
 use App\User;
+use App\Variant;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
@@ -23,8 +25,14 @@ class HomepageController extends Controller
         $eth_price = 250;
         $coins = Coin::getCoins();
         $reviews = Review::get();
+        $bitcoin = Coin::getBitCoin();
+        $ethereum = Coin::getEthereum();
+        $bitcoin_rate = CoinRate::where(['coin_id' => $bitcoin->id, 'active' => 1])->get();
+        $ethereum_rate = CoinRate::where(['coin_id' => $ethereum->id, 'active' => 1])->get();
+        $variants = Variant::where('section', 'COIN')->get();
+
         $blogs = Blog::take(3)->orderBy('id', 'desc')->get();
-        return view('welcome', compact('eth_rate', 'btc_rate', 'coins', "btc_price", 'eth_price','reviews', 'blogs'));
+        return view('welcome', compact('eth_rate', 'btc_rate', 'coins', "btc_price", 'eth_price','reviews', 'bitcoin_rate', 'ethereum_rate', 'blogs'));
     }
 
     public function Faqs(){

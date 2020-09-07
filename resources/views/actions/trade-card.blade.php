@@ -49,7 +49,23 @@
                                                             <option value="others" id="others">Others</option>
                                                         </select>
                                                     </div>
-
+                                                    <div class="form-field form-m-bttm">
+                                                        <select name="variant" class="form-control"
+                                                                id="giftcard-variation"
+                                                                aria-invalid="false" required>
+                                                            <option value="" selected disabled>Variation
+                                                            </option>
+                                                            @foreach($variants as $variant)
+                                                                @if($variant->label === 'ECODE')
+                                                                    <option value="{{$variant->label}}"
+                                                                            id="ecode">{{$variant->label}}</option>
+                                                                @else
+                                                                    <option value="{{$variant->label}}"
+                                                                            id="card_upload">{{$variant->label}}</option>
+                                                                @endif
+                                                            @endforeach
+                                                        </select>
+                                                    </div>
                                                     <div class="form-field form-m-bttm" id="gc-denomination">
                                                         <select name="denomination" class="form-control"
                                                                 id="giftcard-denomination"
@@ -75,6 +91,7 @@
                                                     <div class="alert alert-info" id="giftcard-trade-sell">
                                                         We will pay &#8358;0 for $0
                                                     </div>
+
                                                     <div class="form-field form-m-bttm">
                                                         <select name="sell_option" class="form-control"
                                                                 id="giftcard-sell-option"
@@ -250,7 +267,8 @@
             });
 
             $("#giftcard-sell-option").change(function () {
-                var card_type = $(this).find('option:selected').attr('id')
+                var card_type = $(this).find('option:selected').attr('id');
+                // card_type === 'ecode'
                 if (card_type === 'ecode') {
                     $('#card_upload_container').remove();
                     $('#receipt_upload_container').remove();
@@ -259,9 +277,10 @@
                     html += '<input name="ecode" placeholder="Enter ecode" class="form-control required" aria-required="true" type="text" required></div>'
                     $(html).insertAfter('#giftcard-sell-option');
                 }
-                if (card_type === 'card-upload') {
+                // card_type === 'card-upload'
+                if (card_type !== 'ecode') {
                     if ((app[id])) {
-                        var lower = (app[id].name).toLowerCase()
+                        var lower = (app[id].name).toLowerCase();
                         if (lower === 'amazon') {
                             $('#card_upload_containers-wrapper').remove();
                             $('#receipt-type-wrapper').remove();
@@ -365,6 +384,14 @@
                 var card_id = $('#giftcard-type').val();
                 var denomination = $("#giftcard-denomination").val();
                 var country_id = $("#giftcard-country").val();
+
+                const variation = $("#giftcard-variation").val();
+
+                if(variation == null){
+                    toastr.error('Variation must not be empty');
+                    return;
+                }
+
                 if (country_id === "others") {
                     toastr.error('Admin will get back to you on the card rate through your direct message');
                 } else {
@@ -377,8 +404,10 @@
                         country_id: country_id,
                         card_id: card_id,
                         denomination: denomination,
+                        variant: variation,
                         _token: '{!! csrf_token() !!}',
-                    }
+                    };
+
                     $.ajax({
                         url: "{{route('view-rate') }}",
                         method: 'POST',
@@ -388,10 +417,12 @@
                         cache: false,
                         success: function (Value) {
                             if (Value.status) {
-                                let result = Value.rate * Value.denomination
+                                let result = Value.rate * Value.denomination;
                                 $('#giftcard-trade-sell').html('We will pay &#8358 ' + result + ' for each card you upload for the denomination selected');
                                 toastr.success(Value.msg);
                             } else {
+                                let result = 0;
+                                $('#giftcard-trade-sell').html('We will pay &#8358 ' + result + ' for each card you upload for the denomination selected');
                                 toastr.error(Value.msg);
                             }
                         },

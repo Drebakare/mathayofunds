@@ -13,10 +13,14 @@ class Card extends Model
     public function cardRate(){
         return  $this->hasMany(CardRate::class, 'card_id');
     }
+
     public function cardSellings(){
         return  $this->hasMany(CardSelling::class);
     }
     public function ecode(){
-        return $this->hasOne(Ecode::class);
+        return $this->hasMany(CardRate::class)->where('variant', 'ECODE');
     }
+//    public function ecode(){
+//        return $this->hasOne(Ecode::class);
+//    }
 }

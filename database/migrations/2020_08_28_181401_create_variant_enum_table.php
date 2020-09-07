@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddIsVerifiedToUsersTable extends Migration
+class CreateVariantEnumTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,10 @@ class AddIsVerifiedToUsersTable extends Migration
      */
     public function up()
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->integer('is_verified')->default(0);
+        Schema::create('variants', function (Blueprint $table) {
+            $table->id();
+            $table->string('label')->unique();
+            $table->timestamps();
         });
     }
 
@@ -25,8 +27,6 @@ class AddIsVerifiedToUsersTable extends Migration
      */
     public function down()
     {
-        Schema::table('users', function (Blueprint $table) {
-            $table->dropColumn('is_verified');
-        });
+        Schema::dropIfExists('variants');
     }
 }

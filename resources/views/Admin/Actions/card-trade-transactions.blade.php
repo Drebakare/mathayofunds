@@ -113,7 +113,7 @@
                         <div class="card">
                             <div class="card-body">
                                 <div class="">
-                                    <p>{{$card_transaction->sell_option_id == 1 ? $card_transaction->ecodeTransaction->code : "Nill"}}</p>
+                                    <p>{{$card_transaction->sell_option_id == 1 ? $card_transaction->ecodeTransactions->code : "Nill"}}</p>
                                 </div>
                             </div>
                         </div>

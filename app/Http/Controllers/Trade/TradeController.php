@@ -18,8 +18,10 @@ use App\Http\Controllers\Controller;
 use App\ImageUpload;
 use App\Platform;
 use App\User;
+use App\Variant;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 
@@ -36,10 +38,12 @@ class TradeController extends Controller
             $ethereum = Coin::getEthereum();
             $bitcoin_platforms = Platform::getCoinPlatforms($bitcoin->id);
             $ethereum_platforms = Platform::getCoinPlatforms($ethereum->id);
-            $bitcoin_rate = CoinRate::getRate($bitcoin->id);
-            $ethereum_rate = CoinRate::getRate($ethereum->id);
+            $bitcoin_rate = CoinRate::where(['coin_id' => $bitcoin->id, 'active' => 1])->get();
+            $ethereum_rate = CoinRate::where(['coin_id' => $ethereum->id, 'active' => 1])->get();
+            $variants = Variant::where('section', 'COIN')->get();
+
             return view('actions.trade-coin', compact('bitcoin', 'ethereum', 'bitcoin_rate','ethereum_rate',
-                'bitcoin_platforms', 'ethereum_platforms', 'coins', 'account_details'));
+                'bitcoin_platforms', 'ethereum_platforms', 'coins', 'account_details', $variants));
         }
         else{
             return redirect(route('user.profile'))->with('failure', 'Your account details must be updated to perform this action');
@@ -57,6 +61,8 @@ class TradeController extends Controller
             $countries = Country::get();
             $denominations = Denomination::get();
             $card_rates = Card::inRandomOrder()->take(2)->get();
+            $variants = Variant::where('section', 'CARD')->get();
+
             /*$coins = Coin::getCoins();
             $bitcoin = Coin::getBitCoin();
             $ethereum = Coin::getEthereum();
@@ -64,7 +70,7 @@ class TradeController extends Controller
             $ethereum_platforms = Platform::getCoinPlatforms($ethereum->id);
             $bitcoin_rate = CoinRate::getRate($bitcoin->id);
             $ethereum_rate = CoinRate::getRate($ethereum->id);*/
-            return view('actions.trade-card', compact('cards', 'countries', 'denominations', 'card_rates'));
+            return view('actions.trade-card', compact('cards', 'countries', 'denominations', 'card_rates', 'variants'));
         }
         else{
             return redirect(route('user.profile'))->with('failure', 'Your account details must be updated to perform this action');
@@ -73,7 +79,7 @@ class TradeController extends Controller
     }
 
     public function submitSellCoinForm(Request $request){
-        try {
+//        try {
             if($request->file('payment-proof')->getSize() > 5000000 )
             {
                 return redirect()->back()->with('failure', "Uploaded File Size is Larger than 5mb");
@@ -84,13 +90,27 @@ class TradeController extends Controller
                 'payment_method' => 'bail|required',
                 'platform' => 'bail|required',
             ]);
+
+            $rate_amount = 0;
+            $rate_id = 0;
+            $rates = CoinRate::where(['coin_id' => $request->coin_type, 'active' => 1])->get();
+            foreach ($rates as $r){
+                if ($r->min <= $request->sell_coin_amount && ($request->sell_coin_amount <= $r->max || $r->max === 9999 ) ){
+                    $rate_amount = $r->usd_rate;
+                    $rate_id = $r->id;
+                    break;
+                }
+            }
+            if ($rate_amount == 0){
+                throw new \Exception("No rate found for your request");
+            }
             $image = $request->file('payment-proof');
             $image_name = User::processImage($image);
             $sellings = new CoinSelling();
             $sellings->platform_id = $request->platform;
             $sellings->coin_amount = $request->sell_coin_amount;
-            $sellings->coin_rate_id = CoinRate::getRate($request->coin_type)->id;
-            $sellings->rate_amount = CoinRate::getRate($request->coin_type)->usd_rate;
+            $sellings->coin_rate_id = $rate_id;
+            $sellings->rate_amount = $rate_amount;
             $sellings->payment_proof = $image_name;
             $sellings->status = 0;
             $sellings->user_id = Auth::user()->id;
@@ -101,10 +121,10 @@ class TradeController extends Controller
             $sellings->save();
             Mail::to('mathayofund@gmail.com')->send(new \App\Mail\TradeMail());
             return redirect()->back()->with('success', "Transaction Submitted For Admin Action");
-        }
-        catch (\Exception $exception){
-            return redirect()->back()->with('failure', "Transaction Failed to be Processed, Kindly try again");
-        }
+//        }
+//        catch (\Throwable $exception){
+//            return redirect()->back()->with('failure', "Transaction Failed to be Processed, Kindly try again");
+//        }
     }
     public function submitTradeCardForm(Request $request){
         try {
@@ -117,6 +137,16 @@ class TradeController extends Controller
             }
             $card_amount = Denomination::where('id', $request->denomination)->first()->value;
             $giftcard_type = "giftcard-type";
+            $rateR = CardRate::whereRaw("card_id = ? AND country_id = ? AND variant = ? AND min <= ? AND (max = 9999 OR max >= ? ) AND active = 1",
+                [$request->$giftcard_type, $request->country, $request->variant, $card_amount, $card_amount])->first();
+
+            $rate = 0;
+            if($rateR != null){
+                $rate = $rateR->rate;
+            }else{
+                throw new \Exception("No rate found for your request");
+            }
+
             if ($request->sell_option == 1){
                 $new_card = new CardSelling();
                 $new_card->card_id = $request->$giftcard_type;
@@ -128,9 +158,8 @@ class TradeController extends Controller
                 if ($request->country == "others"){
                     $new_card->user_transaction_approval = 0;
                     $new_card->other_country = $request->country_other;
-                }
-                else{
-                    $rate = Ecode::where('card_id',$request->$giftcard_type)->first()->rate;
+                } else{
+
                     $new_card->user_transaction_approval = 1;
                     $new_card->amount_payable = $rate * $card_amount;
                     $new_card->country_id = $request->country;
@@ -160,7 +189,6 @@ class TradeController extends Controller
                     $new_card->other_country = $request->country_other;
                 }
                 else{
-                    $rate = CardRate::where(['card_id' =>$request->$giftcard_type, 'country_id' => $request->country])->first()->rate;
                     $new_card->amount_payable = $rate * $card_amount * count($request->file('card_upload'));
                     $new_card->rate = $rate;
                     $new_card->country_id = $request->country;
@@ -228,8 +256,10 @@ class TradeController extends Controller
         }
     }
     public function viewRate(Request $request){
-        $rate = CardRate::where(['card_id' => $request->card_id, 'country_id' => $request->country_id])->first();
         $denomination = Denomination::where('id', $request->denomination)->first();
+        $rate = CardRate::whereRaw("card_id = ? AND country_id = ? AND variant = ? AND min <= ? AND (max = 9999 OR max >= ? ) AND active = 1",
+            [$request->card_id, $request->country_id, $request->variant, $denomination->value, $denomination->value])->first();
+
         if ($rate){
             $response = array(
                 "rate" => $rate->rate,
@@ -241,6 +271,7 @@ class TradeController extends Controller
         }
         else{
             $response = array(
+                "rate" => 0,
                 "status" => false,
                 "msg" => "No Rate Found For the Selected Card, Kindly Message Admin For Clarification"
             );

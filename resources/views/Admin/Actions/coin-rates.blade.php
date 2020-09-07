@@ -32,6 +32,9 @@
                                     <tr>
                                         <th scope="col">ID</th>
                                         <th scope="col">Coin</th>
+                                        <td>Min</td>
+                                        <td>Max</td>
+                                        <td>Variant</td>
                                         <th scope="col">Rate($)</th>
                                         <th scope="col">Action(s)</th>
                                     </tr>
@@ -40,9 +43,12 @@
 
                                     <tbody>
                                     @foreach($coin_rates as $key => $coin_rate)
-                                         <tr>
+                                         <tr class="{{  $coin_rate->active == 0 ? 'bg-warning' : '' }}">
                                             <td>{{$coin_rate->id}}</td>
                                             <td>{{$coin_rate->coin->name}}</td>
+                                             <td>{{$coin_rate->min}}</td>
+                                             <td>{{$coin_rate->max == 9999 ? "Unlimited" : $coin_rate->max }}</td>
+                                             <td>{{$coin_rate->variant}}</td>
                                             <td>{{$coin_rate->usd_rate}}</td>
                                             <td>
                                                 <div class="d-flex justify-content-start">
@@ -84,10 +90,32 @@
                     <form action="{{route('admin.edit-coin-rate', ['token' => $coin_rate->token])}}" method="post">
                         @csrf
                         <div class="modal-body">
+                            <div class="mt-3 form-check">
+                                <input type="checkbox" class="form-check-input checkbox-1x" {{ $coin_rate->active == 1 ? "checked" : "" }} name="active" /> <span class="ml-1" style="font-size: 0.9rem;"> Active</span>
+                            </div>
                             <div class="mt-3">
-                                <label> Add New Rate($)</label>
+                                <label>Min</label>
+                                <input type="number" class="form-control" name="min" value="{{ $coin_rate->min }}" id="defaultconfig" required />
+                            </div>
+
+                            <div class="mt-3">
+                                <label>Max</label>
+                                <input type="number" class="form-control" name="max" value="{{ $coin_rate->max }}" id="defaultconfig" required />
+                            </div>
+                            <div class="mt-3">
+                                <label> New Rate($)</label>
                                 <input type="number" class="form-control" name="rate" value="{{$coin_rate->usd_rate}}" id="defaultconfig" required/>
                             </div>
+                            <div class="mt-3">
+                                <label class="control-label">Variant</label>
+                                <select name="variant" class="form-control select2" required>
+                                    <option value="">Select Variant</option>
+                                    @foreach($variants as $variant)
+                                        <option value="{{$variant->label}}" @if($variant->label == $coin_rate->variant) selected @endif>{{$variant->label}}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
                         </div>
                         <div class="modal-footer">
                             <button type="submit" class="btn btn-primary">Update Rate</button>
@@ -109,6 +137,9 @@
                 <form action="{{route('admin.add-coin-rate')}}" method="post">
                     @csrf
                     <div class="modal-body">
+                        <div class="mt-3 form-check">
+                            <input type="checkbox" class="form-check-input checkbox-1x" name="active" checked /> <span class="ml-1" style="font-size: 0.9rem;"> Active</span>
+                        </div>
                         <div class="mt-3">
                             <label class="control-label">Coin</label>
                             <select name="coin" class="form-control select2" required>
@@ -117,6 +148,24 @@
                                     <option value="{{$coin->id}}">{{$coin->name}}</option>
                                 @endforeach
                             </select>
+                        </div>
+                        <div class="mt-3">
+                            <label class="control-label">Variant</label>
+                            <select name="variant" class="form-control select2" required>
+                                <option value="">Select Variant</option>
+                                @foreach($variants as $variant)
+                                    <option value="{{$variant->label}}">{{$variant->label}}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="mt-3">
+                            <label>Min</label>
+                            <input type="number" class="form-control" name="min" id="defaultconfig" required />
+                        </div>
+
+                        <div class="mt-3">
+                            <label>Max</label>
+                            <input type="number" class="form-control" name="max" id="defaultconfig" required />
                         </div>
                         <div class="mt-3">
                             <label>Rate($)</label>
@@ -131,4 +180,15 @@
             </div>
         </div>
     </div>
+
+    <style>
+        .checkbox-1x {
+            transform: scale(1.5);
+            -webkit-transform: scale(1.5);
+        }
+        .checkbox-2x {
+            transform: scale(2);
+            -webkit-transform: scale(2);
+        }
+    </style>
 @endsection
