@@ -11,6 +11,7 @@ use App\Denomination;
 use App\Http\Controllers\Controller;
 use App\Platform;
 use App\User;
+use App\Variant;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -19,17 +20,33 @@ class RateController extends Controller
     public function coinRates(){
         $coin_rates = CoinRate::orderBy('id', 'desc')->get();
         $coins = Coin::get();
-        return view('Admin.Actions.coin-rates', compact('coin_rates', 'coins'));
+        $variants = Variant::where('section', 'COIN')->get();
+
+        return view('Admin.Actions.coin-rates', compact('coin_rates', 'coins', 'variants'));
     }
 
     public function editCoinRate(Request $request, $token){
         try {
             $this->validate($request, [
                 'rate' => 'bail|required',
+                'min' => 'bail|required',
+                'max' => 'bail|required',
+                'variant' => 'bail|required',
             ]);
             $coin_rate = CoinRate::where('token', $token)->first();
             if ($coin_rate){
+
+                if ($request->active == null){
+                    $active = 0;
+                }else{
+                    $active = 1;
+                }
+
                 $coin_rate->usd_rate = $request->rate;
+                $coin_rate->min = $request->min;
+                $coin_rate->max = $request->max;
+                $coin_rate->variant = $request->variant;
+                $coin_rate->active = $active;
                 $coin_rate->save();
                 return redirect()->back()->with('success', 'Coin Details Updated Successfully');
             }
@@ -47,15 +64,29 @@ class RateController extends Controller
             $this->validate($request, [
                 'coin' => 'bail|required',
                 'rate' => 'bail|required',
+                'min' => 'bail|required',
+                'max' => 'bail|required',
+                'variant' => 'bail|required',
             ]);
-            $check_rate = CoinRate::where('coin_id', $request->coin)->first();
+            $check_rate = CoinRate::where(['coin_id' => $request->coin, 'min' => $request->min, 'max' => $request->max, 'variant' => $request->variant])->first();
             if ($check_rate){
                 return redirect()->back()->with('failure', 'Coin rate already exist');
             }
             else{
+
+                if ($request->active == null){
+                    $active = 0;
+                }else{
+                    $active = 1;
+                }
+
                 $add_rate = new CoinRate();
                 $add_rate->coin_id = $request->coin;
                 $add_rate->usd_rate = $request->rate;
+                $add_rate->active = $active;
+                $add_rate->variant = $request->variant;
+                $add_rate->min = $request->min;
+                $add_rate->max = $request->max;
                 $add_rate->token = Str::random(15);
                 $add_rate->save();
                 return redirect()->back()->with('success', 'Coin Rate Added Successfully');
@@ -128,16 +159,30 @@ class RateController extends Controller
         try {
             $this->validate($request, [
                 'rate' => 'bail|required',
+                'min' => 'bail|required',
+                'max' => 'bail|required',
+                'variant' => 'bail|required',
                 'card' => 'bail|required',
                 'country' => 'bail|required',
             ]);
-            $check_card = CardRate::where(['card_id' => $request->card, 'country_id' => $request->country])->first();
+
+            if ($request->active == null){
+                $active = 0;
+            }else{
+                $active = 1;
+            }
+
+            $check_card = CardRate::where(['card_id' => $request->card, 'country_id' => $request->country, 'min' => $request->min, 'max' => $request->max, 'variant' => $request->variant ])->first();
             if ($check_card){
                 return redirect()->back()->with('failure', 'Card rate already exist');
             }
             else{
                 $add_rate = new CardRate();
                 $add_rate->rate = $request->rate;
+                $add_rate->min = $request->min;
+                $add_rate->max = $request->max;
+                $add_rate->variant = $request->variant;
+                $add_rate->active = $active;
                 $add_rate->card_id = $request->card;
                 $add_rate->country_id = $request->country;
                 $add_rate->token = Str::random(15);
@@ -215,14 +260,30 @@ class RateController extends Controller
 
     public function editCardRate(Request $request, $token){
         try {
+
             $this->validate($request, [
                'rate' => 'bail|required',
+               'min' => 'bail|required',
+                'max' => 'bail|required',
+               'variant' => 'bail|required',
                'card' => 'bail|required',
                'country' => 'bail|required',
             ]);
+
             $card_rate = CardRate::where('token', $token)->first();
+
+            if ($request->active == null){
+                $active = 0;
+            }else{
+                $active = 1;
+            }
+
             if ($card_rate){
                 $card_rate->rate = $request->rate;
+                $card_rate->min = $request->min;
+                $card_rate->max = $request->max;
+                $card_rate->variant = $request->variant;
+                $card_rate->active = $active;
                 $card_rate->token = Str::random(15);
                 $card_rate->card_id = $request->card;
                 $card_rate->country_id = $request->country;
@@ -258,7 +319,8 @@ class RateController extends Controller
         $cards = Card::get();
         $countries = Country::get();
         $rates = CardRate::get();
-        return view('Admin.Actions.card-rates', compact('cards', 'countries', 'rates'));
+        $variants = Variant::where('section', 'CARD')->get();
+        return view('Admin.Actions.card-rates', compact('cards', 'countries', 'rates', 'variants'));
     }
 
     public function addPlatform(Request $request){

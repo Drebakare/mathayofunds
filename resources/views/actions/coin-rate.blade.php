@@ -33,14 +33,20 @@
                                 <tr>
                                     <th scope="col">ID</th>
                                     <th scope="col">Coin</th>
+                                    <th scope="col">Min</th>
+                                    <th scope="col">Max</th>
+                                    <th scope="col">Variant</th>
                                     <th scope="col">Rate</th>
                                 </tr>
                                 </thead>
                                 <tbody>
                                 @foreach($coins as $coin)
-                                    <tr>
+                                    <tr class="{{  $coin->active == 0 ? 'bg-warning' : '' }}">
                                         <th scope="row">{{$coin->id}}</th>
                                         <td>{{$coin->coin->name}}</td>
+                                        <td>{{$coin->min}}</td>
+                                        <td>{{$coin->max}}</td>
+                                        <td>{{$coin->variant}}</td>
                                         <td>{{$coin->usd_rate}}</td>
                                     </tr>
                                 @endforeach

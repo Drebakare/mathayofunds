@@ -107,7 +107,8 @@
                                                             <option value="" selected disabled>Select Coin</option>
                                                             @foreach($coins as $coin)
                                                                 <option value="{{$coin->id}}"
-                                                                        id="{{$coin->name}}-sell">{{$coin->name}}</option>
+                                                                        id="{{$coin->name}}-sell">{{$coin->name}}
+                                                                </option>
                                                             @endforeach
                                                         </select>
                                                     </div>
@@ -246,10 +247,14 @@
                                             <div class="col-md-8 col-md-offset-2">
                                                 <div class="clearfix">
                                                     <h4>Bitcoin</h4>
-                                                    <h4>$1 = &#8358; {{$bitcoin_rate->usd_rate}}</h4>
+                                                        @foreach($bitcoin_rate as  $rate)
+                                                            <p> {{$rate->variant}} - &#8358;{{$rate->usd_rate}}</p>
+                                                        @endforeach
                                                     <hr>
                                                     <h4>Ethereum</h4>
-                                                    <h4>$1 = &#8358; {{$ethereum_rate->usd_rate}}</h4>
+                                                        @foreach($ethereum_rate as $erate)
+                                                            <p>   {{$erate->variant}} - &#8358;{{$erate->usd_rate}}</p>
+                                                        @endforeach
                                                 </div>
                                             </div>
                                         </div>
@@ -434,15 +439,41 @@
                 console.log('its here');
                 let coin_type = $('select#coin_type_sell').val();
                 let coin_amount = $('input#sell-coin-amount').val();
-                let btc_rate = '{{$bitcoin_rate->usd_rate}}';
-                let eth_rate = '{{$ethereum_rate->usd_rate}}';
+
+                // coin_type, 1 - Bitcoin, 2 - Ether
+                // The above Id is subjective and could be different in future based on backend behavior
+                // RISK: High
+                let btc_rate = 0;
+                let eth_rate = 0;
+                if(coin_type === '1'){
+                    const brates = JSON.parse('<?= $bitcoin_rate; ?>');
+                    for(let r of brates){
+                        if( r.min <= coin_amount && (coin_amount <= r.max || r.max == 9999 )){
+                            btc_rate = r.usd_rate;
+                            break;
+                        }
+                    }
+                }else if(coin_type === '2'){
+                    const erates = JSON.parse('<?= $ethereum_rate; ?>');
+
+
+                    for(let e of erates){
+                        if( e.min <= coin_amount && (coin_amount <= e.max || e.max == 9999 ) ){
+                            eth_rate = e.usd_rate;
+                            break;
+                        }
+                    }
+                }else{
+                    alert("No rate found for this coin type, contact admin");
+                }
+
                 if (coin_type === '1') {
                     let result = btc_rate * coin_amount;
-                    $('#bitcoin-trade-sell').html('We will pay &#8358 ' + result + ' for ' + coin_amount + ' (Bitcoin trade)');
+                    $('#bitcoin-trade-sell').html('We will pay &#8358 ' + result + ' for ' + coin_amount + ' (Bitcoin trade)@'+btc_rate);
                 }
                 if (coin_type === '2') {
                     let result = eth_rate * coin_amount;
-                    $('#ethereum-trade-sell').html('We will pay &#8358 ' + result + ' for ' + coin_amount + ' (Ethereum trade)');
+                    $('#ethereum-trade-sell').html('We will pay &#8358 ' + result + ' for ' + coin_amount + ' (Ethereum trade)@'+eth_rate);
                 }
 
             });
@@ -450,15 +481,43 @@
             $('input#buy-coin-amount').on('keyup', function () {
                 let coin_type = $('select#coins_type_buy').val();
                 let coin_amount = $('input#buy-coin-amount').val();
-                let btc_rate = '{{$bitcoin_rate->usd_rate}}';
-                let eth_rate = '{{$ethereum_rate->usd_rate}}';
+
+                // coin_type, 1 - Bitcoin, 2 - Ether
+                // The above Id is subjective and could be different in future based on backend behavior
+                // RISK: High
+                let btc_rate = 0;
+                let eth_rate = 0;
+
+                if(coin_type === '1'){
+                    const brates = JSON.parse('<?= $bitcoin_rate; ?>');
+
+                    let btc_rate = 0;
+                    for(let r of brates){
+                        if( r.min <= coin_amount && (coin_amount <= r.max || r.max == 9999 )){
+                            btc_rate = r.usd_rate;
+                        }
+                    }
+
+                }else if(coin_type === '2'){
+                    const erates = JSON.parse('<?= $ethereum_rate; ?>');
+
+                    let eth_rate = 0;
+                    for(let e of erates){
+                        if( e.min <= coin_amount && (coin_amount <= e.max || e.max == 9999 ) ){
+                            eth_rate = e.usd_rate;
+                        }
+                    }
+                }else{
+                    alert("No rate found for this coin type, contact admin");
+                }
+
                 if (coin_type === '1') {
                     let result = btc_rate * coin_amount;
-                    $('#bitcoin-trade-buy').html('You will pay &#8358 ' + result + ' for ' + coin_amount + ' (Bitcoin trade)');
+                    $('#bitcoin-trade-buy').html('You will pay &#8358 ' + result + ' for ' + coin_amount + ' (Bitcoin trade)@'+btc_rate);
                 }
                 if (coin_type === '2') {
                     let result = eth_rate * coin_amount;
-                    $('#ethereum-trade-buy').html('You will pay &#8358 ' + result + ' for ' + coin_amount + ' (Ethereum trade)');
+                    $('#ethereum-trade-buy').html('You will pay &#8358 ' + result + ' for ' + coin_amount + ' (Ethereum trade)@'+eth_rate);
                 }
 
             });

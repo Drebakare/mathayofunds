@@ -297,8 +297,31 @@
             $('button#calculate-button').on('click', function () {
                 let coin_type = $('#coin-type').val();
                 let coin_amount = $('#coin-amount').val();
-                let eth_rate = '{{$eth_rate->usd_rate}}';
-                let btc_rate = '{{$btc_rate->usd_rate}}';
+
+                let btc_rate = 0;
+                let eth_rate = 0;
+                if(coin_type === '1'){
+                    const brates = JSON.parse('<?= $bitcoin_rate; ?>');
+                    for(let r of brates){
+                        if( r.min <= coin_amount && (coin_amount <= r.max || r.max == 9999 )){
+                            btc_rate = r.usd_rate;
+                            break;
+                        }
+                    }
+                }else if(coin_type === '2'){
+                    const erates = JSON.parse('<?= $ethereum_rate; ?>');
+
+
+                    for(let e of erates){
+                        if( e.min <= coin_amount && (coin_amount <= e.max || e.max == 9999 ) ){
+                            eth_rate = e.usd_rate;
+                            break;
+                        }
+                    }
+                }else{
+                    console.log("No rate found for this coin type, contact admin");
+                }
+
                 if(coin_type === '1'){
                     let result = btc_rate * coin_amount;
                     $('#calculate-result').html('&#8358; ' + result);
@@ -311,8 +334,30 @@
             $('input#coin-amount').on('keyup', function () {
                 let coin_type = $('#coin-type').val();
                 let coin_amount = $('#coin-amount').val();
-                let eth_rate = '{{$eth_rate->usd_rate}}';
-                let btc_rate = '{{$btc_rate->usd_rate}}';
+
+                let btc_rate = 0;
+                let eth_rate = 0;
+                if(coin_type === '1'){
+                    const brates = JSON.parse('<?= $bitcoin_rate; ?>');
+                    for(let r of brates){
+                        if( r.min <= coin_amount && (coin_amount <= r.max || r.max == 9999 )){
+                            btc_rate = r.usd_rate;
+                            break;
+                        }
+                    }
+                }else if(coin_type === '2'){
+                    const erates = JSON.parse('<?= $ethereum_rate; ?>');
+
+
+                    for(let e of erates){
+                        if( e.min <= coin_amount && (coin_amount <= e.max || e.max == 9999 ) ){
+                            eth_rate = e.usd_rate;
+                            break;
+                        }
+                    }
+                }else{
+                    console.log("No rate found for this coin type, contact admin");
+                }
                 if(coin_type === '1'){
                     let result = btc_rate * coin_amount;
                     $('#calculate-result').html('&#8358; ' + result);

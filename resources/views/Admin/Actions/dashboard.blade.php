@@ -46,9 +46,9 @@
 
                                         <div
                                             class="mini-stat-icon avatar-sm rounded-circle bg-primary align-self-center">
-                                                        <span class="avatar-title">
-                                                            <i class="mdi mdi-message h2 text-white mb-0"></i>
-                                                        </span>
+                                            <span class="avatar-title">
+                                                <i class="mdi mdi-message h2 text-white mb-0"></i>
+                                            </span>
                                         </div>
                                     </div>
                                 </div>
@@ -60,7 +60,13 @@
                                     <div class="media">
                                         <div class="media-body">
                                             <p class="text-muted font-weight-medium">Card Trades</p>
-                                            <h4 class="mb-0">{{count($cards)}}</h4>
+                                            <h4 class="mb-0">{{count($cards)}}
+                                                @if($card_pending > 0)
+                                                    <span class="ml-2 badge badge-warning">
+                                                        {!!  $card_pending > 9 ? "9<sup>+</sup>" : $card_pending !!} pending
+                                                     </span>
+                                                @endif
+                                            </h4>
                                         </div>
 
                                         <div
@@ -79,7 +85,14 @@
                                     <div class="media">
                                         <div class="media-body">
                                             <p class="text-muted font-weight-medium">Coin Trades</p>
-                                            <h4 class="mb-0">{{count($coin_sellings) + count($coin_buyings)}}</h4>
+                                            <h4 class="mb-0">{{count($coin_sellings) + count($coin_buyings)}}
+
+                                                @if($coin_pending > 0)
+                                                    <span class="badge badge-danger">
+                                                        {!!  $coin_pending > 9 ? "" : $coin_pending !!} pending
+                                                    </span>
+                                                @endif
+                                            </h4>
                                         </div>
 
                                         <div

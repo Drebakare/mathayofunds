@@ -34,15 +34,21 @@
                                     <th scope="col">ID</th>
                                     <th scope="col">Type</th>
                                     <th scope="col">Country</th>
+                                    <th scope="col">Min</th>
+                                    <th scope="col">Max</th>
+                                    <th scope="col">Variant</th>
                                     <th scope="col">Rate</th>
                                 </tr>
                                 </thead>
                                 <tbody>
                                 @foreach($cards as $card)
-                                    <tr>
+                                    <tr class="{{  $card->active == 0 ? 'bg-warning' : '' }}">
                                         <th scope="row">{{$card->id}}</th>
                                         <td>{{$card->card->name}}</td>
                                         <td>{{$card->country->name}}</td>
+                                        <td>{{$card->min}}</td>
+                                        <td>{{$card->max}}</td>
+                                        <td>{{$card->variant}}</td>
                                         <td>{{$card->rate}}</td>
                                     </tr>
                                 @endforeach

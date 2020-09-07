@@ -25,9 +25,12 @@ class AdminController extends Controller
         $coin_selling_transactions = CoinSelling::orderBy('id', 'desc')->take(3)->get();
         $coin_buyings_transactions = CoinBuying::orderBy('id', 'desc')->take(3)->get();
         $card_transactions = CardSelling::orderBy('id', 'desc')->take(5)->get();
+        $coin_pending = CoinSelling::where('status', 0)->count();
+        $card_pending = CardSelling::where('status', 0)->count();
+
         return view('Admin.Actions.dashboard', compact('users', 'messages', 'cards',
             'coin_sellings', 'coin_buyings', 'limit_users', 'coin_buyings_transactions',
-            'coin_selling_transactions', 'card_transactions'));
+            'coin_selling_transactions', 'card_transactions', 'coin_pending', 'card_pending'));
     }
 
     public function adminViewCardReceipt(){
